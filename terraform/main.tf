@@ -33,7 +33,7 @@ resource "azurerm_storage_container" "tfstate" {
 # Terraform Backend Configuration
 terraform {
   backend "azurerm" {
-    resource_group_name  = data.azurerm_resource_group.rg.name
+    resource_group_name  = "my_resource_group"
     storage_account_name = "mystorageaccount"
     container_name       = "tfstate"
     key                  = "terraform.tfstate"
