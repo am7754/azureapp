@@ -12,6 +12,7 @@
 	<artifactId>azuredemo</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>azuredemo</name>
+	<packaging>jar</packaging>
 	<description>Azure Demo project for Spring Boot</description>
 	<url/>
 	<licenses>

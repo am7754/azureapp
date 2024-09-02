@@ -1,93 +1,54 @@
-# This workflow installs the latest version of Terraform CLI and configures the Terraform CLI configuration file
-# with an API token for Terraform Cloud (app.terraform.io). On pull request events, this workflow will run
-# `terraform init`, `terraform fmt`, and `terraform plan` (speculative plan via Terraform Cloud). On push events
-# to the "main" branch, `terraform apply` will be executed.
-#
-# Documentation for `hashicorp/setup-terraform` is located here: https://github.com/hashicorp/setup-terraform
-#
-# To use this workflow, you will need to complete the following setup steps.
-#
-# 1. Create a `main.tf` file in the root of this repository with the `remote` backend and one or more resources defined.
-#   Example `main.tf`:
-#     # The configuration for the `remote` backend.
-#     terraform {
-#       backend "remote" {
-#         # The name of your Terraform Cloud organization.
-#         organization = "example-organization"
-#
-#         # The name of the Terraform Cloud workspace to store Terraform state files in.
-#         workspaces {
-#           name = "example-workspace"
-#         }
-#       }
-#     }
-#
-#     # An example resource that does nothing.
-#     resource "null_resource" "example" {
-#       triggers = {
-#         value = "A example resource that does nothing!"
-#       }
-#     }
-#
-#
-# 2. Generate a Terraform Cloud user API token and store it as a GitHub secret (e.g. TF_API_TOKEN) on this repository.
-#   Documentation:
-#     - https://www.terraform.io/docs/cloud/users-teams-organizations/api-tokens.html
-#     - https://help.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets
-#
-# 3. Reference the GitHub secret in step using the `hashicorp/setup-terraform` GitHub Action.
-#   Example:
-#     - name: Setup Terraform
-#       uses: hashicorp/setup-terraform@v1
-#       with:
-#         cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
-
-name: 'Terraform'
+name: Deploy Java Application to Azure
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-
-permissions:
-  contents: read
+    branches:
+      - main
 
 jobs:
-  terraform:
-    name: 'Terraform'
+  deploy:
     runs-on: ubuntu-latest
-    environment: production
-
-    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
-    defaults:
-      run:
-        shell: bash
 
     steps:
-    # Checkout the repository to the GitHub Actions runner
-    - name: Checkout
-      uses: actions/checkout@v4
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v1
-      with:
-        cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt'
 
-    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-    - name: Terraform Init
-      run: terraform init
+      - name: Build with Maven
+        run: mvn clean package -DskipTests
 
-    # Checks that all Terraform configuration files adhere to a canonical format
-    - name: Terraform Format
-      run: terraform fmt -check
+      # Step 2: Set up Terraform
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
 
-    # Generates an execution plan for Terraform
-    - name: Terraform Plan
-      run: terraform plan -input=false
+      # Step 3: Initialize Terraform
+      - name: Terraform Init
+        working-directory: ./terraform
+        run: terraform init
 
-      # On push to "main", build or change infrastructure according to Terraform configuration files
-      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
-    - name: Terraform Apply
-      if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
-      run: terraform apply -auto-approve -input=false
+      # Step 4: Apply Terraform configuration
+      - name: Terraform Apply
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        run: terraform apply -auto-approve
+
+      # Step 5: Build Docker Image
+      - name: Build Docker Image
+        run: docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/my-azure-app:latest .
+
+      # Step 6: Login to Azure Container Registry (ACR)
+      - name: Login to ACR
+        run: echo ${{ secrets.ACR_PASSWORD }} | docker login ${{ secrets.ACR_LOGIN_SERVER }} -u ${{ secrets.ACR_USERNAME }} --password-stdin
+
+      # Step 7: Push Docker Image to ACR
+      - name: Push Docker Image
+        run: docker push ${{ secrets.ACR_LOGIN_SERVER }}/my-azure-app:latest
