@@ -20,12 +20,10 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
 
-      - name: Build with Maven
-        run: mvn clean package -DskipTests
-
       - name: Set up Azure CLI
         run: |
-          sudo apt-get install azure-cli
+          sudo apt-get update
+          sudo apt-get install -y azure-cli
 
       - name: Login to Azure
         run: az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
@@ -52,6 +50,9 @@ jobs:
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         run: terraform apply -auto-approve
+
+      - name: Build with Maven
+        run: mvn clean package -DskipTests
 
       # Step 5: Build Docker Image
       - name: Build Docker Image
