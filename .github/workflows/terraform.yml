@@ -24,7 +24,7 @@ jobs:
         run: mvn clean package -DskipTests
 
       - name: Set up Azure CLI
-        uses: azure/setup-azure-cli@v1
+        uses: azure/setup-azure-cli@v2
         with:
           azure-version: 'latest'
 
