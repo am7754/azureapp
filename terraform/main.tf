@@ -10,7 +10,7 @@ data "azurerm_resource_group" "rg" {
 
 # Create the storage account for Terraform state
 resource "azurerm_storage_account" "storage" {
-  name                     = "mystorageaccount" # Replace with your storage account name (must be globally unique)
+  name                     = "ashfaqstorageaccount" # Replace with your storage account name (must be globally unique)
   resource_group_name      = data.azurerm_resource_group.rg.name
   location                 = data.azurerm_resource_group.rg.location
   account_tier             = "Standard"
@@ -24,7 +24,7 @@ resource "azurerm_storage_account" "storage" {
 # Create the blob container for Terraform state
 resource "azurerm_storage_container" "tfstate" {
   name                  = "tfstate"
-  storage_account_name  = azurerm_storage_account.storage.name
+  storage_account_name  = "ashfaqstoragecontainer"
   container_access_type = "private"
 }
 
