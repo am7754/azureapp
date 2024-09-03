@@ -23,7 +23,7 @@ data "azurerm_resource_group" "rg" {
 
 # Create the blob container for Terraform state
 resource "azurerm_storage_container" "tfstate" {
-  name                  = "tfstate"
+  name                  = "tfstate2"
   storage_account_name  = "ashfaqstorageaccount"
   container_access_type = "private"
 }
