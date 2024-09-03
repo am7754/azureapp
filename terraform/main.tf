@@ -10,12 +10,11 @@ data "azurerm_resource_group" "rg" {
 
 # Create the storage account for Terraform state
 resource "azurerm_storage_account" "storage" {
-  name                      = "mystorageaccount" # Replace with your storage account name (must be globally unique)
-  resource_group_name       = data.azurerm_resource_group.rg.name
-  location                  = data.azurerm_resource_group.rg.location
-  account_tier              = "Standard"
-  account_replication_type  = "LRS"
-  enable_https_traffic_only = true
+  name                     = "mystorageaccount" # Replace with your storage account name (must be globally unique)
+  resource_group_name      = data.azurerm_resource_group.rg.name
+  location                 = data.azurerm_resource_group.rg.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
 
   lifecycle {
     prevent_destroy = true
