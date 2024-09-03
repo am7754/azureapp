@@ -9,17 +9,17 @@ data "azurerm_resource_group" "rg" {
 }
 
 # Create the storage account for Terraform state
-resource "azurerm_storage_account" "storage" {
-  name                     = "ashfaqstorageaccount" # Replace with your storage account name (must be globally unique)
-  resource_group_name      = data.azurerm_resource_group.rg.name
-  location                 = data.azurerm_resource_group.rg.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-
-  lifecycle {
-    prevent_destroy = true
-  }
-}
+#resource "azurerm_storage_account" "storage" {
+#  name                     = "ashfaqstorageaccount" # Replace with your storage account name (must be globally unique)
+#  resource_group_name      = data.azurerm_resource_group.rg.name
+#  location                 = data.azurerm_resource_group.rg.location
+#  account_tier             = "Standard"
+#  account_replication_type = "LRS"
+#
+#  lifecycle {
+#    prevent_destroy = true
+#  }
+#}
 
 # Create the blob container for Terraform state
 resource "azurerm_storage_container" "tfstate" {
