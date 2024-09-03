@@ -50,9 +50,9 @@ data "azurerm_container_group" "myapp" {
   resource_group_name = data.azurerm_resource_group.rg.name
 }
 
-# Grant ACR pull permissions to ACI
-resource "azurerm_role_assignment" "acrpull" {
-  principal_id         = "e79033e2-b474-4936-a1e9-3fe9283a7fe4"
-  role_definition_name = "AcrPull"
-  scope                = data.azurerm_container_registry.acr.id
-}
+## Grant ACR pull permissions to ACI
+#resource "azurerm_role_assignment" "acrpull" {
+#  principal_id         = "e79033e2-b474-4936-a1e9-3fe9283a7fe4"
+#  role_definition_name = "AcrPull"
+#  scope                = data.azurerm_container_registry.acr.id
+#}
