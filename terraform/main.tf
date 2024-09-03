@@ -5,8 +5,7 @@ provider "azurerm" {
 
 # Reference to the existing resource group
 data "azurerm_resource_group" "rg" {
-  name     = "my_resource_group" # Replace with your resource group name
-  location = "eastus"
+  name = "my_resource_group" # Replace with your resource group name
 }
 
 # Create the storage account for Terraform state
