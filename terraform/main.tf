@@ -1,10 +1,10 @@
 provider "azurerm" {
   features = {}
   # Service Principal Authentication
-  client_id       = var.client_id != "" ? var.client_id : env.ARM_CLIENT_ID
-  client_secret   = var.client_secret != "" ? var.client_secret : env.ARM_CLIENT_SECRET
-  subscription_id = var.subscription_id != "" ? var.subscription_id : env.ARM_SUBSCRIPTION_ID
-  tenant_id       = var.tenant_id != "" ? var.tenant_id : env.ARM_TENANT_ID
+  client_id       = var.client_id
+  client_secret   = var.client_secret
+  subscription_id = var.subscription_id
+  tenant_id       = var.tenant_id
 }
 
 
@@ -35,15 +35,15 @@ resource "azurerm_storage_container" "tfstate" {
   container_access_type = "private"
 }
 
-# Terraform Backend Configuration
-terraform {
-  backend "azurerm" {
-    resource_group_name  = "my_resource_group"
-    storage_account_name = "mystorageaccount"
-    container_name       = "tfstate"
-    key                  = "terraform.tfstate"
-  }
-}
+## Terraform Backend Configuration
+#terraform {
+#  backend "azurerm" {
+#    resource_group_name  = "my_resource_group"
+#    storage_account_name = "mystorageaccount"
+#    container_name       = "tfstate"
+#    key                  = "terraform.tfstate"
+#  }
+#}
 
 # Reference to the existing Azure Container Registry
 data "azurerm_container_registry" "acr" {
